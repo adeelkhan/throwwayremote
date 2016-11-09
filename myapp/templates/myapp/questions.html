@@ -1,0 +1,23 @@
+<h1>Questions for this Sub topics are:</h1>
+ <table style="width:100%">
+  <tr>
+        <th>Id</th>
+        <th>Question</th>
+        <th>Created At</th>
+        <th>Number of times Asked</th>
+        <th>Number of times answered</th>
+  </tr>
+
+{% for q in question_list %}
+    <tr>
+        <td>{{q.id}} </td>
+        <td><a href="{% url 'question_response'  q.id %}">{{q.question_text}}</a> </td>
+        <td>{{q.created_at}} </td>
+        <td>{{q.num_of_times_asked}} </td>
+        <td>{{q.num_of_times_answered}} </td>
+    </tr>
+{% endfor %}
+ </table>
+
+<a href="{% url 'view_dashboard' %}">Back to Dashboard</a>
+
