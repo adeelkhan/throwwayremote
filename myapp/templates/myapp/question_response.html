@@ -1,1 +1,24 @@
-question_response
+
+<h1> Add Your Response </h1>
+
+<form action="{% url 'save_response' question.id%}" method="post">
+    {% csrf_token %}
+    <label>Question Text: </label> <b> {{ question.question_text }}</b>
+        <br/>
+    <label>Difficulty Level: </label> {{ question.difficulty_level }}
+        <br/>
+    <label>Solution: </label> {{ question.solution }}
+        <br/>
+    <label>Comments:</label> {{ question.comments }}
+        <br/>
+    <label>Ratings:</label>
+        <br/>
+    <select name="ratings">
+        <option value="1">Not Answered</option>
+        <option value="2">Bad</option>
+        <option value="3">Satisfactory</option>
+        <option value="4">Good</option>
+        <option value="5">Excellent</option>
+    </select>
+    <input type="submit" value="Add Response" />
+</form>

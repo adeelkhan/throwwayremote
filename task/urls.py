@@ -20,5 +20,6 @@ urlpatterns = [
     url(r'^dashboard/', views.dashboard, name="view_dashboard"),
     url(r'^question/', views.questions_list, name="view_questions_list"),
     url(r'^question_response/(?P<qid>[0-9]+)', views.question_response, name="question_response"),
+    url(r'^save_response/(?P<qid>[0-9]+)', views.save_response, name="save_response"),
     url(r'^admin/', include(admin.site.urls)),
 ]

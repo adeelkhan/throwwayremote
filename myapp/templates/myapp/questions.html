@@ -1,5 +1,9 @@
 <h1>Questions for this Sub topics are:</h1>
 
+{% if response_saved %}
+Your Response saved successfully for the question
+{% endif %}
+
 <form action="{% url 'view_questions_list' %}" method="post">
 {% csrf_token %}
     <label>Difficulty Level:</label>
