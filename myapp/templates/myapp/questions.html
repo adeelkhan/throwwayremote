@@ -1,4 +1,20 @@
 <h1>Questions for this Sub topics are:</h1>
+
+<form action="{% url 'view_questions_list' %}" method="post">
+{% csrf_token %}
+    <label>Difficulty Level:</label>
+    <select name="difficulty_level">
+        <option value="1">Basic</option>
+        <option value="2">Intermediate</option>
+        <option value="3">Advance</option>
+        <option value="4">All</option>
+    </select>
+
+    <input type="hidden" value="{{sub_topic}}" name="sub_topic" />
+<input type="submit" value="Select" />
+</form>
+
+
  <table style="width:100%">
   <tr>
         <th>Id</th>
