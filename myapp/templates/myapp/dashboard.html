@@ -1,5 +1,11 @@
 
-<h1>Select Questions</h1>
+<h3>Dashboard Select Questions</h3>
+
+{% if user.is_authenticated %}
+<b> Hi {{ user.username }}! </b>
+
+{% endif %}
+
 
 <form action="{% url 'view_dashboard' %}" method="post">
 {% csrf_token %}
@@ -25,3 +31,5 @@
 <input type="submit" value="View Questions" />
 </form>
 {%endif%}
+
+<a href="{% url 'logout' %}">Logout</a>

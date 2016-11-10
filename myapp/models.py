@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 # Create your models here.
 
 
@@ -36,10 +36,13 @@ class Question(models.Model):
     num_of_times_asked = models.IntegerField(default=0)
     num_of_times_answered = models.IntegerField(default=0)
 
-    comments = models.CharField(max_length=200)
+    comments = models.CharField(max_length=500)
     reviewer_votes = models.IntegerField(default=0)
     answer_ratings = models.CharField(max_length=1, choices=RATINGS)
+
     created_at = models.DateTimeField('created at')
+    response_given_by = models.CharField(max_length=50 , default="NA")
+    response_at = models.DateTimeField('response at', default= timezone.now())
 
     def __str__(self):
         return self.question_text

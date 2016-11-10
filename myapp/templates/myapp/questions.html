@@ -1,9 +1,14 @@
-<h1>Questions for this Sub topics are:</h1>
-
-{% if response_saved %}
-Your Response saved successfully for the question
+{% if user.is_authenticated %}
+    <h3>logged in user: {{ user.username }}!</h3>
 {% endif %}
 
+
+<h1>Questions List:</h1>
+
+{% if response_saved %}
+    Your Response saved successfully for this question
+{% endif %}
+<br/>
 <form action="{% url 'view_questions_list' %}" method="post">
 {% csrf_token %}
     <label>Difficulty Level:</label>
@@ -21,11 +26,13 @@ Your Response saved successfully for the question
 
  <table style="width:100%">
   <tr>
-        <th>Id</th>
-        <th>Question</th>
-        <th>Created At</th>
-        <th>Number of times Asked</th>
-        <th>Number of times answered</th>
+        <td><b>Id</b></td>
+        <td><b>Question</b></td>
+        <td><b>Question Created At</b></td>
+        <td><b>Number of times Asked</b></td>
+        <td><b>Number of times answered</b></td>
+        <td><b>Response at</b></td>
+        <td><b>Response by</b></td>
   </tr>
 
 {% for q in question_list %}
@@ -35,9 +42,11 @@ Your Response saved successfully for the question
         <td>{{q.created_at}} </td>
         <td>{{q.num_of_times_asked}} </td>
         <td>{{q.num_of_times_answered}} </td>
+        <td>{{q.response_at}} </td>
+        <td>{{q.response_given_by}} </td>
     </tr>
 {% endfor %}
  </table>
 
 <a href="{% url 'view_dashboard' %}">Back to Dashboard</a>
-
+<a href="{% url 'logout' %}">Logout</a>
