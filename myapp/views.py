@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import QuestionTopic, QuestionSubTopic, Question
+from .models import QuestionResponse
 from django.utils import timezone
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -11,7 +12,7 @@ from django.contrib.auth import logout
 
 
 @login_required(login_url="/view_login")
-def dashboard(request):
+def view_dashboard(request):
 
     """
     Enable user to view dashboard. Handles both functionality of listing
@@ -52,7 +53,13 @@ def questions_list(request):
 
     """
     dict = {}
-    sub_topic_id = request.POST.get("sub_topic")
+
+    sub_topic_id=1
+    if request.POST.get("sub_topic") is not None:
+        sub_topic_id = request.POST.get("sub_topic")
+    elif request.GET.get("sub_topic") is not None:
+        sub_topic_id = request.GET.get("sub_topic")
+
     difficulty_level = request.POST.get("difficulty_level")
 
     # Show all when no difficulty filter applied
@@ -135,6 +142,37 @@ def save_response(request, qid):
         'question_list': question_list
     })
 
+@login_required(login_url="/view_login")
+def view_question_responses(request, qid):
+    """
+    Enable user to view all responses for a question
+
+    :param request: http request object
+            qid: question id for the question selected by user
+    :return None:
+
+    """
+
+    sub_topic_id = request.GET.get("sub_topic")
+    print(sub_topic_id)
+
+
+    rating_choice = {
+        'Not Answered': 1,
+        'Bad': 2,
+        'Satisfactory': 3,
+        'Good': 4,
+        'Excellent': 5
+    }
+
+    dict = {}
+    dict['ratings'] = rating_choice
+    question_responses = QuestionResponse.objects.filter(question_id=qid)
+    #print(question_responses)
+    dict["question_response_list"] = question_responses
+    dict["sub_topic"] = sub_topic_id
+
+    return render(request, 'myapp/view_question_responses.html', dict)
 
 @login_required(login_url="/view_login")
 def user_dashboard(request):
@@ -146,7 +184,6 @@ def user_dashboard(request):
     """
 
     return render(request, 'myapp/dashboard.html', {})
-
 
 def view_login(request):
     """
@@ -212,4 +249,4 @@ def user_signup(request):
 
     return HttpResponse("signup.")
 
-# Create your views here.
+

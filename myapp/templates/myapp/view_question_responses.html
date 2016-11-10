@@ -1,0 +1,32 @@
+{% if user.is_authenticated %}
+<h3>logged in user: {{ user.username }}!</h3>
+{% endif %}
+
+
+<h1>Responses :</h1>
+<br/>
+
+
+<table style="width:100%">
+    <tr>
+        <td><b>Id</b></td>
+        <td><b>Question</b></td>
+        <td><b>Ratings</b></td>
+        <td><b>Response at</b></td>
+        <td><b>Response by</b></td>
+    </tr>
+
+    {% for q in question_response_list %}
+    <tr>
+        <td>{{q.id}}</td>
+        <td>{{q.question.question_text}}</td>
+        <td>4</td>
+        <td>{{q.response_at}}</td>
+        <td>{{q.response_given_by}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'view_dashboard' %}">Back to Dashboard</a>
+<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}">Back to Questions</a>
+<a href="{% url 'logout' %}">Logout</a>

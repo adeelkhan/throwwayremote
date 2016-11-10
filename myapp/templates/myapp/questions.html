@@ -31,8 +31,7 @@ Your Response saved successfully for this question
         <td><b>Question Created At</b></td>
         <td><b>Number of times Asked</b></td>
         <td><b>Number of times answered</b></td>
-        <td><b>Response at</b></td>
-        <td><b>Response by</b></td>
+        <td><b>Responses</b></td>
     </tr>
 
     {% for q in question_list %}
@@ -44,8 +43,9 @@ Your Response saved successfully for this question
         <td>{{q.created_at}}</td>
         <td>{{q.num_of_times_asked}}</td>
         <td>{{q.num_of_times_answered}}</td>
-        <td>{{q.response_at}}</td>
-        <td>{{q.response_given_by}}</td>
+        <td>
+            <a href="{% url 'view_question_responses'  q.id %}?sub_topic={{q.sub_topic.id}}">Click to View</a>
+        </td>
     </tr>
     {% endfor %}
 </table>
