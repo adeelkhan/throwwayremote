@@ -1,5 +1,5 @@
 {% if user.is_authenticated %}
-    <h3>logged in user: {{ user.username }}!</h3>
+<h3>logged in user: {{ user.username }}!</h3>
 
 {% endif %}
 
@@ -12,11 +12,11 @@ Your Response saved successfully
 <form action="{% url 'save_response' question.id%}" method="post">
     {% csrf_token %}
     <label>Question Text: </label> <b> {{ question.question_text }}</b>
-        <br/>
+    <br/>
     <label>Difficulty Level: </label> {{ question.difficulty_level }}
-        <br/>
+    <br/>
     <label>Solution: </label> <b>{{ question.solution }}</b>
-        <br/>
+    <br/>
     <label>Ratings:</label>
     <select name="ratings">
         <option value="1">Not Answered</option>
@@ -28,8 +28,8 @@ Your Response saved successfully
     <br/>
     <label>Give Comments:</label>
     <br/>
-    <textarea name="comments" maxlength="500" rows="10" cols="50" ></textarea>
+    <textarea name="comments" maxlength="500" rows="10" cols="50"></textarea>
     <br/>
-    <input type="submit" value="Add Response" />
+    <input type="submit" value="Add Response"/>
 </form>
 <a href="{% url 'logout' %}">Logout</a>

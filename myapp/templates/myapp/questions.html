@@ -1,16 +1,16 @@
 {% if user.is_authenticated %}
-    <h3>logged in user: {{ user.username }}!</h3>
+<h3>logged in user: {{ user.username }}!</h3>
 {% endif %}
 
 
 <h1>Questions List:</h1>
 
 {% if response_saved %}
-    Your Response saved successfully for this question
+Your Response saved successfully for this question
 {% endif %}
 <br/>
 <form action="{% url 'view_questions_list' %}" method="post">
-{% csrf_token %}
+    {% csrf_token %}
     <label>Difficulty Level:</label>
     <select name="difficulty_level">
         <option value="1">Basic</option>
@@ -19,13 +19,13 @@
         <option value="4">All</option>
     </select>
 
-    <input type="hidden" value="{{sub_topic}}" name="sub_topic" />
-<input type="submit" value="Select" />
+    <input type="hidden" value="{{sub_topic}}" name="sub_topic"/>
+    <input type="submit" value="Select"/>
 </form>
 
 
- <table style="width:100%">
-  <tr>
+<table style="width:100%">
+    <tr>
         <td><b>Id</b></td>
         <td><b>Question</b></td>
         <td><b>Question Created At</b></td>
@@ -33,20 +33,22 @@
         <td><b>Number of times answered</b></td>
         <td><b>Response at</b></td>
         <td><b>Response by</b></td>
-  </tr>
-
-{% for q in question_list %}
-    <tr>
-        <td>{{q.id}} </td>
-        <td><a href="{% url 'question_response'  q.id %}">{{q.question_text}}</a> </td>
-        <td>{{q.created_at}} </td>
-        <td>{{q.num_of_times_asked}} </td>
-        <td>{{q.num_of_times_answered}} </td>
-        <td>{{q.response_at}} </td>
-        <td>{{q.response_given_by}} </td>
     </tr>
-{% endfor %}
- </table>
+
+    {% for q in question_list %}
+    <tr>
+        <td>{{q.id}}</td>
+        <td>
+            <a href="{% url 'question_response'  q.id %}">{{q.question_text}}</a>
+        </td>
+        <td>{{q.created_at}}</td>
+        <td>{{q.num_of_times_asked}}</td>
+        <td>{{q.num_of_times_answered}}</td>
+        <td>{{q.response_at}}</td>
+        <td>{{q.response_given_by}}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 <a href="{% url 'view_dashboard' %}">Back to Dashboard</a>
 <a href="{% url 'logout' %}">Logout</a>

@@ -2,7 +2,6 @@ from django.shortcuts import render
 from .models import QuestionTopic, QuestionSubTopic, Question
 from django.utils import timezone
 
-
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
@@ -13,48 +12,62 @@ from django.contrib.auth import logout
 
 @login_required(login_url="/view_login")
 def dashboard(request):
+
+    """
+    Enable user to view dashboard. Handles both functionality of listing
+    topics and subtopics
+
+    :param request:
+    :return None:
+
+    """
     dict = {}
 
-    # topic is already selected by user
+    # first time accessing list only Topics
     if request.POST.get("topic") is None:
         topics = QuestionTopic.objects.all()
         dict['topics_list'] = topics
         dict['sub_topic'] = False
     else:
-        # first time accessing dashboard
+        # list both topics and subtopics
         topics = QuestionTopic.objects.all()
         dict['topics_list'] = topics
+
         topic_id = request.POST.get("topic")
         topic = QuestionTopic.objects.get(id=topic_id)
-
         sub_topic_list = topic.questionsubtopic_set.all()
+
         dict['sub_topics_list'] = sub_topic_list
         dict['sub_topic'] = True
     return render(request, 'myapp/dashboard.html', dict)
 
+
 @login_required(login_url="/view_login")
 def questions_list(request):
+    """
+    Enable user to view questions for a sub topic.
 
+    :param request:
+    :return None:
+
+    """
     dict = {}
     sub_topic_id = request.POST.get("sub_topic")
     difficulty_level = request.POST.get("difficulty_level")
-    print(sub_topic_id)
-    print difficulty_level
-    print(type(difficulty_level))
 
     # Show all when no difficulty filter applied
     if difficulty_level is None or \
-            int(difficulty_level) is 4:
+                    int(difficulty_level) is 4:
         question_list = Question.objects.filter(
-                                        sub_topic_id=sub_topic_id) \
-                                        .order_by('-num_of_times_asked')
+            sub_topic_id=sub_topic_id) \
+            .order_by('-num_of_times_asked')
 
     # apply a filter based on difficulty
     else:
         question_list = Question.objects.filter(
-                                            sub_topic_id=sub_topic_id,
-                                            difficulty_level=difficulty_level
-                                        ).order_by('-num_of_times_asked')
+            sub_topic_id=sub_topic_id,
+            difficulty_level=difficulty_level
+        ).order_by('-num_of_times_asked')
     dict["question_list"] = question_list
     dict["sub_topic"] = sub_topic_id
 
@@ -63,6 +76,14 @@ def questions_list(request):
 
 @login_required(login_url="/view_login")
 def question_response(request, qid):
+    """
+    Enable user to view response page for a question
+
+    :param request: http request object
+            qid: question id for the question selected by user
+    :return None:
+
+    """
 
     dict = {}
     question = Question.objects.get(id=qid)
@@ -72,11 +93,19 @@ def question_response(request, qid):
 
 
 @login_required(login_url="/view_login")
-def save_response(request,qid):
+def save_response(request, qid):
+    """
+    Enable user to save his/her response for a question
+
+    :param request: http request object
+            qid: question id for the question selected by user
+    :return None:
+
+    """
 
     rating_choice = {
-       'Not Answered': 1,
-       'Bad': 2,
+        'Not Answered': 1,
+        'Bad': 2,
         'Satisfactory': 3,
         'Good': 4,
         'Excellent': 5
@@ -96,15 +125,12 @@ def save_response(request,qid):
     question.comments = comments
     question.save()
 
-
-    print(question.sub_topic.id)
-
     sub_topic_id = question.sub_topic.id
-    question_list = Question.objects.filter(sub_topic_id = sub_topic_id).\
-                                            order_by('-num_of_times_asked')
+    question_list = Question.objects.filter(sub_topic_id=sub_topic_id). \
+        order_by('-num_of_times_asked')
 
     return render(request, 'myapp/questions.html', {
-        'response_saved': True,     # for successful msg response
+        'response_saved': True,  # for successful msg response
         'sub_topic': sub_topic_id,
         'question_list': question_list
     })
@@ -112,13 +138,35 @@ def save_response(request,qid):
 
 @login_required(login_url="/view_login")
 def user_dashboard(request):
-    return render(request,'myapp/dashboard.html',{})
+    """
+    Enable user to view dashboard page
+
+    :param request: request object having values
+    :return None:
+    """
+
+    return render(request, 'myapp/dashboard.html', {})
+
 
 def view_login(request):
+    """
+    Enable user to view login page
+
+    :param request: request object having values
+    :return None:
+    """
+
     return render_to_response('myapp/view_login.html', {},
-                                RequestContext(request))
+                              RequestContext(request))
+
 
 def user_login(request):
+    """
+    This view authenticate user for a username, password
+
+    :param request: request object having values
+    :return None:
+    """
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -126,32 +174,42 @@ def user_login(request):
 
         user = authenticate(username=username, password=password)
         if user:
-            # Is the account active? It could have been disabled.
             if user.is_active:
                 login(request, user)
                 return HttpResponseRedirect('/dashboard/')
             else:
-                # An inactive account was used - no logging in!
                 return HttpResponse("Your account is disabled.")
         else:
-            # Bad login details were provided. So we can't log the user in.
             print "Invalid login details: {0}, {1}".format(username, password)
             return render(request, 'myapp/logout.html', {})
 
-    # The request is not a HTTP POST, so display the login form.
-    # This scenario would most likely be a HTTP GET.
     else:
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
         return render(request, 'auth_app/view_login.html', {})
 
+
 @login_required(login_url="/view_login")
 def user_logout(request):
+    """
+    Enable user to logout from app
+
+    :param request: request object having values
+    :return None:
+    """
     logout(request)
-    # Take the user back to the homepage.
+    # Take the user back to login.
     return HttpResponseRedirect('/view_login/')
 
+
 def user_signup(request):
+    """
+    Enable user signup to app
+
+    :param request: request object having values
+    :return None:
+    """
+
     return HttpResponse("signup.")
 
 # Create your views here.

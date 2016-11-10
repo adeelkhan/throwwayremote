@@ -1,4 +1,3 @@
-
 <h3>Dashboard Select Questions</h3>
 
 {% if user.is_authenticated %}
@@ -8,27 +7,27 @@
 
 
 <form action="{% url 'view_dashboard' %}" method="post">
-{% csrf_token %}
+    {% csrf_token %}
     <label>Select topic:</label>
     <select name="topic">
         {% for topic in topics_list %}
-            <option value="{{topic.id}}">{{topic.topic_text}}</option>
+        <option value="{{topic.id}}">{{topic.topic_text}}</option>
         {% endfor %}
     </select>
-<input type="submit" value="Select Subtopic" />
+    <input type="submit" value="Select Subtopic"/>
 </form>
 
 
 {% if sub_topic == True %}
 <form action="{% url 'view_questions_list' %}" method="post">
-{% csrf_token %}
+    {% csrf_token %}
     <label>Select subtopic:</label>
     <select name="sub_topic">
         {% for stopic in sub_topics_list %}
-            <option value="{{stopic.id}}">{{stopic.subtopic_text}}</option>
+        <option value="{{stopic.id}}">{{stopic.subtopic_text}}</option>
         {% endfor %}
     </select>
-<input type="submit" value="View Questions" />
+    <input type="submit" value="View Questions"/>
 </form>
 {%endif%}
 
