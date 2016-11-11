@@ -1,9 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
-
-# Create your models here.
-
+from django.contrib.auth.models import User
 
 class QuestionTopic(models.Model):
     """ This would represent Major Topics for Questions """
@@ -41,6 +38,24 @@ class Question(models.Model):
     def __str__(self):
         return self.question_text
 
+
+class CandidateProfile(models.Model):
+
+    name = models.CharField(max_length=100)
+    url = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class Interview(models.Model):
+
+    candidate = models.ForeignKey(CandidateProfile, default=None)
+    user = models.ForeignKey(User, default=None)
+
+    def __str__(self):
+        return str(self.id)
+
 class QuestionResponse(models.Model):
     """ This would represent Question Response """
 
@@ -52,8 +67,12 @@ class QuestionResponse(models.Model):
         ('5', 'Excellent'),
     )
 
-    question = models.ForeignKey(Question, default=None)
+    question = models.ForeignKey(Question, default=True)
+    interview = models.ForeignKey(Interview, null=True)
+
     comments = models.CharField(max_length=500)
     answer_ratings = models.CharField(max_length=1, choices=RATINGS)
     response_given_by = models.CharField(max_length=50, default="NA")
     response_at = models.DateTimeField('response at', default=timezone.now())
+
+
