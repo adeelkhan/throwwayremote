@@ -122,14 +122,17 @@ def save_response(request, qid):
     comments = request.POST.get("comments")
 
     question = Question.objects.get(id=qid)
+    question_response = QuestionResponse(question_id = qid,
+                                         answer_ratings=int(rating),
+                                         response_at=timezone.now(),
+                                         response_given_by=request.user.username,
+                                         comments=comments)
+
     if int(rating) is not rating_choice['Not Answered']:
         question.num_of_times_answered += 1
-
-    question.answer_ratings = int(rating)
     question.num_of_times_asked += 1
-    question.response_at = timezone.now()
-    question.response_given_by = request.user.username
-    question.comments = comments
+
+    question_response.save()
     question.save()
 
     sub_topic_id = question.sub_topic.id
@@ -156,19 +159,17 @@ def view_question_responses(request, qid):
     sub_topic_id = request.GET.get("sub_topic")
     print(sub_topic_id)
 
-
-    rating_choice = {
-        'Not Answered': 1,
-        'Bad': 2,
-        'Satisfactory': 3,
-        'Good': 4,
-        'Excellent': 5
-    }
+    rating_choice = ['',
+                     'Not Answered',
+                     'Bad',
+                     'Satisfactory',
+                     'Good',
+                     'Excellent'
+                     ]
+    question_responses = QuestionResponse.objects.filter(question_id=qid)
 
     dict = {}
     dict['ratings'] = rating_choice
-    question_responses = QuestionResponse.objects.filter(question_id=qid)
-    #print(question_responses)
     dict["question_response_list"] = question_responses
     dict["sub_topic"] = sub_topic_id
 
@@ -238,7 +239,6 @@ def user_logout(request):
     # Take the user back to login.
     return HttpResponseRedirect('/view_login/')
 
-
 def user_signup(request):
     """
     Enable user signup to app
@@ -246,7 +246,6 @@ def user_signup(request):
     :param request: request object having values
     :return None:
     """
-
     return HttpResponse("signup.")
 
 

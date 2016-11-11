@@ -1,6 +1,11 @@
+
+
+
+
 {% if user.is_authenticated %}
 <h3>logged in user: {{ user.username }}!</h3>
 {% endif %}
+
 
 
 <h1>Responses :</h1>
@@ -18,9 +23,10 @@
 
     {% for q in question_response_list %}
     <tr>
-        <td>{{q.id}}</td>
-        <td>{{q.question.question_text}}</td>
-        <td>4</td>
+        <td>{{ q.id }}</td>
+        <td>{{ q.question.question_text }}</td>
+        {% load index %}
+        <td>{{ ratings|index:q.answer_ratings }}</td>
         <td>{{q.response_at}}</td>
         <td>{{q.response_given_by}}</td>
     </tr>
