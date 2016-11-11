@@ -44,7 +44,8 @@ Your Response saved successfully for this question
         <td>{{q.num_of_times_asked}}</td>
         <td>{{q.num_of_times_answered}}</td>
         <td>
-            <a href="{% url 'view_question_responses'  q.id %}?sub_topic={{q.sub_topic.id}}">Click to View</a>
+            <a href="{% url 'view_question_responses'  q.id %}?sub_topic={{q.sub_topic.id}}">Click
+                to View</a>
         </td>
     </tr>
     {% endfor %}

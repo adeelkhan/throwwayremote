@@ -95,6 +95,7 @@ def question_response(request, qid):
     dict = {}
     question = Question.objects.get(id=qid)
     dict["question"] = question
+    dict["sub_topic"] = question.sub_topic.id
 
     return render(request, 'myapp/question_response.html', dict)
 
@@ -157,7 +158,7 @@ def view_question_responses(request, qid):
     """
 
     sub_topic_id = request.GET.get("sub_topic")
-    print(sub_topic_id)
+    #print(sub_topic_id)
 
     rating_choice = ['',
                      'Not Answered',
@@ -169,6 +170,12 @@ def view_question_responses(request, qid):
     question_responses = QuestionResponse.objects.filter(question_id=qid)
 
     dict = {}
+
+    q = Question.objects.get(id = qid)
+    #print q
+    #q = question_response[0]
+    print "sub_topic is:" + str(q.sub_topic_id)
+
     dict['ratings'] = rating_choice
     dict["question_response_list"] = question_responses
     dict["sub_topic"] = sub_topic_id
