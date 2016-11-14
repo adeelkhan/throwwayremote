@@ -30,30 +30,43 @@ def perform_review(request):
             interview = Interview.objects.get(candidate_id=cid,
                                                 user_id=request.user.id)
 
-            print "already exist"
             candidate_list = CandidateProfile.objects.all()
             candidate = CandidateProfile.objects.get(id=cid)
-            print candidate.id
-            return render(request, 'myapp/dashboard.html', {
-                'already_reviewed': True,
-                'candidate_list': candidate_list,
-                'candidate': candidate
-            })
-        except Interview.DoesNotExist:
 
-            print "creating a new one"
-            print cid
-            print request.user.id
+            dict = {}
+            dict["candidate_list"] = candidate_list
+            dict["candidate"] = candidate
+            dict["review_status"] = "open"
+
+            if interview.status == "closed":
+                dict["review_status"] = "closed"
+
+            return render(request, 'myapp/dashboard.html', dict)
+
+        except Interview.DoesNotExist:
             interview = Interview.objects.create(candidate_id=cid,
-                                                 user_id=request.user.id)
+                                                 user_id=request.user.id,
+                                                 status="open")
     else:
-        #print request.user.id
-        #print "request.user.id " + request.user.id
         interview = Interview.objects.create(candidate_id=cid,
-                                 user_id=request.user.id)
+                                                user_id=request.user.id,
+                                                status="open")
 
     return HttpResponseRedirect(reverse('view_start_review', args=(),
                                         kwargs={'review_id': interview.id}))
+
+
+def freeze_review(request):
+    review_id = request.GET.get("review_id")
+    review = Interview.objects.get(id=review_id)
+    review.status = "closed"
+    review.save()
+
+    candidate_list = CandidateProfile.objects.all()
+
+    return render(request, 'myapp/dashboard.html', {
+        'candidate_list': candidate_list
+    })
 
 
 @login_required(login_url="/view_login")

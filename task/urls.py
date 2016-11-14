@@ -40,7 +40,10 @@ urlpatterns = [
     url(r'^view_all_reviews/', views.view_all_reviews,
         name="view_all_reviews"),
 
-    url(r'^candidate_review/(?P<review_id>[0-9]+)', views.view_candidate_review,
+    url(r'^candidate_review/', views.freeze_review,
+        name="freeze_review"),
+
+    url(r'^freeze_review/(?P<review_id>[0-9]+)', views.view_candidate_review,
         name="view_candidate_review"),
 
     url(r'^view_login/', views.view_login, name='view_login'),
