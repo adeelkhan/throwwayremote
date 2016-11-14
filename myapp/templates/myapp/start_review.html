@@ -27,4 +27,5 @@
 </form>
 {%endif%}
 
-<a href="{% url 'logout' %}">Logout</a>
+<a href="{% url 'logout' %}">Logout</a> |
+<a href="{% url 'freeze_review' %}?review_id={{review_id}}">Freeze review</a>

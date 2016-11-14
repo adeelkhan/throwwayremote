@@ -2,7 +2,7 @@
 <b> Hi {{ user.username }}! Welcome to your Dashboard</b>
 {% endif %}
 </br>
-{% if already_reviewed %}
+{% if review_status == "closed" %}
 <b> Already reviewed candidate {{ candidate.name }} ,
     select other candidates </b>
 {% endif %}
