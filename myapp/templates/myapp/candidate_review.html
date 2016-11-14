@@ -1,0 +1,28 @@
+{% if user.is_authenticated %}
+<b> Logged in user is {{ user.username }}! </b>
+{% endif %}
+<h3>Review for Candidate : {{candidate_name}}</h3>
+<h3>Reviewer Name : {{user.username}}</h3>
+<br/>
+<table style="width:100%">
+    <tr>
+        <td><b>Question Id</b></td>
+        <td><b>Question Name</b></td>
+        <td><b>Rating</b></td>
+        <td><b>Comments</b></td>
+        <td><b>Response at</b></td>
+    </tr>
+
+    {% for resp in review_responses %}
+    <tr>
+        <td>{{resp.question.id}}</td>
+        <td>{{resp.question.question_text}}</td>
+        {% load index %}
+        <td>{{ ratings|index:resp.answer_ratings }}</td>
+        <td>{{resp.comments}}</td>
+        <td>{{resp.response_at}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'logout' %}">Logout</a>

@@ -1,12 +1,7 @@
 
-
-
-
 {% if user.is_authenticated %}
-<h3>logged in user: {{ user.username }}!</h3>
+<b> Logged in user is {{ user.username }}! </b>
 {% endif %}
-
-
 
 <h1>Responses :</h1>
 <br/>
@@ -32,6 +27,5 @@
     {% endfor %}
 </table>
 
-<a href="{% url 'view_dashboard' %}">Back to Dashboard</a>
-<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}">Back to Questions</a>
+<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">Back to Questions</a> |
 <a href="{% url 'logout' %}">Logout</a>

@@ -1,9 +1,8 @@
 {% if user.is_authenticated %}
-<h3>logged in user: {{ user.username }}!</h3>
+<b> Logged in user is {{ user.username }}! </b>
 {% endif %}
-
-
-<h1>Questions List:</h1>
+<h2>Reviewing candidate : {{candidate.name}}</h2>
+<h3>Questions List:</h3>
 
 {% if response_saved %}
 Your Response saved successfully for this question
@@ -38,18 +37,18 @@ Your Response saved successfully for this question
     <tr>
         <td>{{q.id}}</td>
         <td>
-            <a href="{% url 'question_response'  q.id %}">{{q.question_text}}</a>
+            <a href="{% url 'question_response'  q.id %}?review_id={{review_id}}">{{q.question_text}}</a>
         </td>
         <td>{{q.created_at}}</td>
         <td>{{q.num_of_times_asked}}</td>
         <td>{{q.num_of_times_answered}}</td>
         <td>
-            <a href="{% url 'view_question_responses'  q.id %}?sub_topic={{q.sub_topic.id}}">Click
+            <a href="{% url 'view_question_responses'  q.id %}?sub_topic={{q.sub_topic.id}}&review_id={{review_id}}">Click
                 to View</a>
         </td>
     </tr>
     {% endfor %}
 </table>
 
-<a href="{% url 'view_dashboard' %}">Back to Dashboard</a>
+<a href="{% url 'view_start_review' review_id %}">Back to Questions</a>|
 <a href="{% url 'logout' %}">Logout</a>

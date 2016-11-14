@@ -1,0 +1,32 @@
+{% if user.is_authenticated %}
+<b> Logged in user is {{ user.username }}! </b>
+{% endif %}
+
+<h2>Reviewing candidate : {{candidate.name}}</h2>
+<form action="{% url 'view_start_review' review_id %}" method="post">
+    {% csrf_token %}
+    <label>Select topic:</label>
+    <select name="topic">
+        {% for topic in topics_list %}
+        <option value="{{topic.id}}">{{topic.topic_text}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Select Subtopic"/>
+</form>
+
+
+{{review_id}}
+{% if sub_topic == True %}
+<form action="{% url 'view_questions_list' %}?review_id={{review_id}}" method="post">
+    {% csrf_token %}
+    <label>Select subtopic:</label>
+    <select name="sub_topic">
+        {% for stopic in sub_topics_list %}
+        <option value="{{stopic.id}}">{{stopic.subtopic_text}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="View Questions"/>
+</form>
+{%endif%}
+
+<a href="{% url 'logout' %}">Logout</a>

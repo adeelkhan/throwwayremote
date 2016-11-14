@@ -19,9 +19,29 @@ from myapp import views
 urlpatterns = [
     url(r'^dashboard/', views.view_dashboard, name="view_dashboard"),
     url(r'^question/', views.questions_list, name="view_questions_list"),
-    url(r'^question_response/(?P<qid>[0-9]+)', views.question_response, name="question_response"),
-    url(r'^view_question_responses/(?P<qid>[0-9]+)', views.view_question_responses, name="view_question_responses"),
-    url(r'^save_response/(?P<qid>[0-9]+)', views.save_response, name="save_response"),
+    url(r'^question_response/(?P<qid>[0-9]+)', views.question_response,
+        name="question_response"),
+    url(r'^view_question_responses/(?P<qid>[0-9]+)',
+        views.view_question_responses, name="view_question_responses"),
+    url(r'^save_response/(?P<qid>[0-9]+)', views.save_response,
+        name="save_response"),
+
+    url(r'^perform_review/', views.perform_review,
+        name="perform_review"),
+
+    url(r'^view_start_review/(?P<review_id>[0-9]+)', views.view_start_review,
+        name="view_start_review"),
+
+    url(r'^view_my_reviews/', views.view_my_reviews,
+        name="view_my_reviews"),
+
+    url(r'^view_pending_reviews/', views.view_pending_reviews,
+        name="view_pending_reviews"),
+    url(r'^view_all_reviews/', views.view_all_reviews,
+        name="view_all_reviews"),
+
+    url(r'^candidate_review/(?P<review_id>[0-9]+)', views.view_candidate_review,
+        name="view_candidate_review"),
 
     url(r'^view_login/', views.view_login, name='view_login'),
     url(r'^login/', views.user_login, name='login'),

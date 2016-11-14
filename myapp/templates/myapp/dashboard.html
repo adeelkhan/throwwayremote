@@ -1,34 +1,28 @@
-<h3>Dashboard Select Questions</h3>
-
 {% if user.is_authenticated %}
-<b> Hi {{ user.username }}! </b>
-
+<b> Hi {{ user.username }}! Welcome to your Dashboard</b>
+{% endif %}
+</br>
+{% if already_reviewed %}
+<b> Already reviewed candidate {{ candidate.name }} ,
+    select other candidates </b>
 {% endif %}
 
+<br/>
+<br/>
 
-<form action="{% url 'view_dashboard' %}" method="post">
+<form action="{% url 'perform_review' %}" method="post">
     {% csrf_token %}
-    <label>Select topic:</label>
-    <select name="topic">
-        {% for topic in topics_list %}
-        <option value="{{topic.id}}">{{topic.topic_text}}</option>
+    <label>Select Candidate:</label>
+    <select name="candidate_id">
+        {% for candidate in candidate_list %}
+        <option value="{{candidate.id}}">{{candidate.name}} -
+                                        {{candidate.url}}
+        </option>
         {% endfor %}
     </select>
-    <input type="submit" value="Select Subtopic"/>
+    <input type="submit" value="Start Review"/>
 </form>
-
-
-{% if sub_topic == True %}
-<form action="{% url 'view_questions_list' %}" method="post">
-    {% csrf_token %}
-    <label>Select subtopic:</label>
-    <select name="sub_topic">
-        {% for stopic in sub_topics_list %}
-        <option value="{{stopic.id}}">{{stopic.subtopic_text}}</option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="View Questions"/>
-</form>
-{%endif%}
-
+<a href="{% url 'view_my_reviews' %}">View My Reviews</a> |
+<a href="{% url 'view_pending_reviews' %}">View Pending Reviews</a> |
+<a href="{% url 'view_all_reviews' %}">View All Reviews</a> |
 <a href="{% url 'logout' %}">Logout</a>

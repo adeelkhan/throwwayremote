@@ -1,0 +1,25 @@
+{% if user.is_authenticated %}
+<b> Logged in user is {{ user.username }}! </b>
+{% endif %}
+<h4>Reviews List:</h4>
+<table style="width:100%">
+    <tr>
+        <td><b>Review Id</b></td>
+        <td><b>Candidate Name</b></td>
+        <td><b>Performed at</b></td>
+    </tr>
+
+    {% for r in review_list %}
+    <tr>
+        <td>{{r.id}}</td>
+        <td>
+            <a href="{% url 'view_candidate_review'  r.id %}">
+                {{r.candidate.name}}
+            </a>
+        </td>
+        <td>perfomed date</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'logout' %}">Logout</a>

@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import QuestionTopic, QuestionSubTopic, Question
 from .models import QuestionResponse
+from .models import CandidateProfile
+from .models import Interview
 from django.utils import timezone
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -9,10 +11,53 @@ from django.contrib.auth import authenticate, login
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib.auth import logout
+from django.core.urlresolvers import reverse
 
 
 @login_required(login_url="/view_login")
-def view_dashboard(request):
+def perform_review(request):
+
+    cid = request.POST.get("candidate_id")
+    #print request.user.id
+    print "candidate id " + str(cid)
+
+    # test here if the user, candidate tuple is not already there
+    # and its a new interview
+
+    interview = None
+    if Interview.objects.all().exists():
+        try:
+            interview = Interview.objects.get(candidate_id=cid,
+                                                user_id=request.user.id)
+
+            print "already exist"
+            candidate_list = CandidateProfile.objects.all()
+            candidate = CandidateProfile.objects.get(id=cid)
+            print candidate.id
+            return render(request, 'myapp/dashboard.html', {
+                'already_reviewed': True,
+                'candidate_list': candidate_list,
+                'candidate': candidate
+            })
+        except Interview.DoesNotExist:
+
+            print "creating a new one"
+            print cid
+            print request.user.id
+            interview = Interview.objects.create(candidate_id=cid,
+                                                 user_id=request.user.id)
+    else:
+        #print request.user.id
+        #print "request.user.id " + request.user.id
+        interview = Interview.objects.create(candidate_id=cid,
+                                 user_id=request.user.id)
+
+    return HttpResponseRedirect(reverse('view_start_review', args=(),
+                                        kwargs={'review_id': interview.id}))
+
+
+@login_required(login_url="/view_login")
+def view_start_review(request, review_id):
 
     """
     Enable user to view dashboard. Handles both functionality of listing
@@ -22,13 +67,22 @@ def view_dashboard(request):
     :return None:
 
     """
+
+    print review_id
+    interview = Interview.objects.get(id = review_id)
+    candidate = CandidateProfile.objects.get(id=interview.candidate_id)
+
     dict = {}
+
+    dict['candidate'] = candidate
+    dict['review_id'] = review_id
 
     # first time accessing list only Topics
     if request.POST.get("topic") is None:
         topics = QuestionTopic.objects.all()
         dict['topics_list'] = topics
         dict['sub_topic'] = False
+
     else:
         # list both topics and subtopics
         topics = QuestionTopic.objects.all()
@@ -40,8 +94,48 @@ def view_dashboard(request):
 
         dict['sub_topics_list'] = sub_topic_list
         dict['sub_topic'] = True
-    return render(request, 'myapp/dashboard.html', dict)
 
+    return render(request, 'myapp/start_review.html', dict)
+
+def view_my_reviews(request):
+    review_list = Interview.objects.filter(user_id=request.user.id)
+    print review_list
+    return render(request, 'myapp/review_list.html', {
+        'review_list': review_list,
+        'type': 'completed'
+    })
+
+
+def view_candidate_review(request, review_id):
+    rating_choice = ['',
+                     'Not Answered',
+                     'Bad',
+                     'Satisfactory',
+                     'Good',
+                     'Excellent'
+                     ]
+    review = Interview.objects.get(id=review_id)
+    review_responses = review.questionresponse_set.all()
+
+    print review_responses
+    return render(request, 'myapp/candidate_review.html', {
+        'review_responses': review_responses,
+        'candidate_name': review.candidate.name,
+        'ratings': rating_choice
+    })
+
+def view_pending_reviews(request):
+    pass
+    """reviews = Interview.objects.filter(user_id=request.user.id)
+    render(request, 'myapp/review_list.html', {
+        'reviews': reviews,
+        'type': 'pending'
+    })"""
+
+
+
+def view_all_reviews(request):
+    pass
 
 @login_required(login_url="/view_login")
 def questions_list(request):
@@ -75,8 +169,19 @@ def questions_list(request):
             sub_topic_id=sub_topic_id,
             difficulty_level=difficulty_level
         ).order_by('-num_of_times_asked')
+
     dict["question_list"] = question_list
     dict["sub_topic"] = sub_topic_id
+
+
+    review_id = request.GET.get("review_id")
+
+    interview = Interview.objects.get(id=review_id)
+    candidate = interview.candidate
+    print candidate.name
+
+    dict['review_id'] = review_id
+    dict["candidate"] = candidate
 
     return render(request, 'myapp/questions.html', dict)
 
@@ -96,6 +201,7 @@ def question_response(request, qid):
     question = Question.objects.get(id=qid)
     dict["question"] = question
     dict["sub_topic"] = question.sub_topic.id
+    dict['review_id'] = request.GET.get("review_id")
 
     return render(request, 'myapp/question_response.html', dict)
 
@@ -121,6 +227,7 @@ def save_response(request, qid):
 
     rating = request.POST.get("ratings")
     comments = request.POST.get("comments")
+    review_id = request.POST.get("review_id")
 
     question = Question.objects.get(id=qid)
     question_response = QuestionResponse(question_id = qid,
@@ -133,6 +240,7 @@ def save_response(request, qid):
         question.num_of_times_answered += 1
     question.num_of_times_asked += 1
 
+    question_response.interview_id = review_id
     question_response.save()
     question.save()
 
@@ -143,6 +251,7 @@ def save_response(request, qid):
     return render(request, 'myapp/questions.html', {
         'response_saved': True,  # for successful msg response
         'sub_topic': sub_topic_id,
+        'review_id': review_id,
         'question_list': question_list
     })
 
@@ -158,7 +267,7 @@ def view_question_responses(request, qid):
     """
 
     sub_topic_id = request.GET.get("sub_topic")
-    #print(sub_topic_id)
+    review_id = request.GET.get("review_id")
 
     rating_choice = ['',
                      'Not Answered',
@@ -170,28 +279,28 @@ def view_question_responses(request, qid):
     question_responses = QuestionResponse.objects.filter(question_id=qid)
 
     dict = {}
-
     q = Question.objects.get(id = qid)
-    #print q
-    #q = question_response[0]
-    print "sub_topic is:" + str(q.sub_topic_id)
 
     dict['ratings'] = rating_choice
     dict["question_response_list"] = question_responses
     dict["sub_topic"] = sub_topic_id
+    dict["review_id"] = review_id
 
     return render(request, 'myapp/view_question_responses.html', dict)
 
 @login_required(login_url="/view_login")
-def user_dashboard(request):
+def view_dashboard(request):
     """
     Enable user to view dashboard page
 
     :param request: request object having values
     :return None:
     """
+    candidate_list = CandidateProfile.objects.all()
 
-    return render(request, 'myapp/dashboard.html', {})
+    return render(request, 'myapp/dashboard.html', {
+        'candidate_list': candidate_list
+    })
 
 def view_login(request):
     """
@@ -231,7 +340,7 @@ def user_login(request):
     else:
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
-        return render(request, 'auth_app/view_login.html', {})
+        return render(request, 'my_app/view_login.html', {})
 
 
 @login_required(login_url="/view_login")
