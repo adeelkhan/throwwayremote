@@ -14,8 +14,6 @@
     <input type="submit" value="Select Subtopic"/>
 </form>
 
-
-{{review_id}}
 {% if sub_topic == True %}
 <form action="{% url 'view_questions_list' %}?review_id={{review_id}}" method="post">
     {% csrf_token %}

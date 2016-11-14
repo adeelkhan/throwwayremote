@@ -29,8 +29,9 @@ Your Response saved successfully
     <br/>
     <textarea name="comments" maxlength="500" rows="10" cols="50"></textarea>
     <br/>
-    <input type="hidden" name="review_id" value="{{review_id}}" />
+    <input type="hidden" name="review_id" value="{{review_id}}"/>
     <input type="submit" value="Add Response"/>
 </form>
+<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">Back
+    to Questions</a> |
 <a href="{% url 'logout' %}">Logout</a>
-<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">Back to Questions</a>
