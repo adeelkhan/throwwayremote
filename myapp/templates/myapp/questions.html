@@ -4,9 +4,9 @@
 <h2>Reviewing candidate : {{candidate.name}}</h2>
 <h3>Questions List:</h3>
 
-{% if response_saved %}
+{% if response_saved == True %}
 Your Response saved successfully for this question
-{% else %}
+{% elif response_saved == False %}
 Response already given for this question
 {% endif %}
 <br/>
@@ -21,6 +21,7 @@ Response already given for this question
     </select>
 
     <input type="hidden" value="{{sub_topic}}" name="sub_topic"/>
+    <input type="hidden" value="{{review_id}}" name="review_id"/>
     <input type="submit" value="Select"/>
 </form>
 
@@ -32,18 +33,28 @@ Response already given for this question
         <td><b>Question Created At</b></td>
         <td><b>Number of times Asked</b></td>
         <td><b>Number of times answered</b></td>
+        <td><b>Response Given</b></td>
         <td><b>Responses</b></td>
     </tr>
 
     {% for q in question_list %}
     <tr>
         <td>{{q.id}}</td>
+        {% load is_member %}
+        {% if already_responded_list|is_member:q.id == "yes" %}
         <td>
-            <a href="{% url 'question_response'  q.id %}?review_id={{review_id}}">{{q.question_text}}</a>
+            <a href="{% url 'view_question_response'  q.id %}?review_id={{review_id}}">{{q.question_text}}</a>
         </td>
+        {% else %}
+        <td>
+            <a href="{% url 'add_question_response'  q.id %}?review_id={{review_id}}">{{q.question_text}}</a>
+        </td>
+        {% endif %}
         <td>{{q.created_at}}</td>
         <td>{{q.num_of_times_asked}}</td>
         <td>{{q.num_of_times_answered}}</td>
+        {% load is_member %}
+        <td>{{ already_responded_list|is_member:q.id }}</td>
         <td>
             <a href="{% url 'view_question_responses'  q.id %}?sub_topic={{q.sub_topic.id}}&review_id={{review_id}}">Click
                 to View</a>

@@ -163,11 +163,17 @@ def questions_list(request):
     """
     dict = {}
 
-    sub_topic_id=1
+    sub_topic_id=0
     if request.POST.get("sub_topic") is not None:
         sub_topic_id = request.POST.get("sub_topic")
     elif request.GET.get("sub_topic") is not None:
         sub_topic_id = request.GET.get("sub_topic")
+
+    review_id=0
+    if request.POST.get("review_id") is not None:
+        review_id = request.POST.get("review_id")
+    elif request.GET.get("review_id") is not None:
+        review_id = request.GET.get("review_id")
 
     difficulty_level = request.POST.get("difficulty_level")
 
@@ -185,24 +191,22 @@ def questions_list(request):
             difficulty_level=difficulty_level
         ).order_by('-num_of_times_asked')
 
-    dict["question_list"] = question_list
-    dict["sub_topic"] = sub_topic_id
 
-
-    review_id = request.GET.get("review_id")
-
+    already_responded_list = QuestionResponse.objects.\
+                                filter(interview_id=review_id)
     interview = Interview.objects.get(id=review_id)
     candidate = interview.candidate
-    print candidate.name
 
+    dict["question_list"] = question_list
+    dict["already_responded_list"] = already_responded_list
+    dict["sub_topic"] = sub_topic_id
     dict['review_id'] = review_id
     dict["candidate"] = candidate
 
     return render(request, 'myapp/questions.html', dict)
 
-
 @login_required(login_url="/view_login")
-def question_response(request, qid):
+def add_question_response(request, qid):
     """
     Enable user to view response page for a question
 
@@ -248,6 +252,8 @@ def save_response(request, qid):
     question = Question.objects.get(id=qid)
     sub_topic_id = question.sub_topic.id
 
+    candidate= Interview.objects.get(id=review_id).candidate
+
     # if response not existed for this question and interview then add it
     try:
         QuestionResponse.objects.get(question_id=qid,
@@ -269,16 +275,43 @@ def save_response(request, qid):
         question_response.interview_id = review_id
         question_response.save()
         question.save()
+
         dict['response_saved'] = True
 
     question_list = Question.objects.filter(sub_topic_id=sub_topic_id). \
         order_by('-num_of_times_asked')
+    already_responded_list = QuestionResponse.objects.\
+                                filter(interview_id=review_id)
 
     dict['sub_topic'] = sub_topic_id
     dict['review_id'] = review_id
     dict['question_list'] = question_list
+    dict["already_responded_list"] = already_responded_list
+    dict['candidate'] = candidate
 
     return render(request, 'myapp/questions.html', dict)
+
+@login_required(login_url="/view_login")
+def view_question_response(request, qid):
+    rating_choice = ['',
+                     'Not Answered',
+                     'Bad',
+                     'Satisfactory',
+                     'Good',
+                     'Excellent'
+                     ]
+
+    review_id = request.GET.get("review_id")
+    response = QuestionResponse.objects.get(question_id=qid,interview_id=review_id)
+    dict = {}
+
+    dict["question"] = response.question
+    dict["sub_topic"] = response.question.sub_topic.id
+    dict['ratings'] = rating_choice
+    dict['review_id'] = request.GET.get("review_id")
+    dict['response'] = response
+
+    return render(request, 'myapp/view_question_response.html', dict)
 
 @login_required(login_url="/view_login")
 def view_question_responses(request, qid):

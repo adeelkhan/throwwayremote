@@ -1,0 +1,23 @@
+{% if user.is_authenticated %}
+<b> Logged in user is {{ user.username }}! </b>
+<br/>
+
+{% endif %}
+
+    <label>Question Text: </label> <b> {{ question.question_text }}</b>
+    <br/>
+    <label>Difficulty Level: </label> {{ question.difficulty_level }}
+    <br/>
+    <label>Solution: </label> <b>{{ question.solution }}</b>
+    <br/>
+    <label>Ratings:</label>
+    {% load index %}
+    {{ ratings|index:response.answer_ratings }}
+    <br/>
+    <label>Comments:</label>
+    {{ response.comments }}
+    <br/>
+
+<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">Back
+    to Questions</a> |
+<a href="{% url 'logout' %}">Logout</a>
