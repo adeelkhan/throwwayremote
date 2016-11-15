@@ -6,6 +6,8 @@
 
 {% if response_saved %}
 Your Response saved successfully for this question
+{% else %}
+Response already given for this question
 {% endif %}
 <br/>
 <form action="{% url 'view_questions_list' %}" method="post">
@@ -50,5 +52,5 @@ Your Response saved successfully for this question
     {% endfor %}
 </table>
 
-<a href="{% url 'view_start_review' review_id %}">Back to Questions</a> |
+<a href="{% url 'view_start_review' review_id %}">Dashboard</a> |
 <a href="{% url 'logout' %}">Logout</a>

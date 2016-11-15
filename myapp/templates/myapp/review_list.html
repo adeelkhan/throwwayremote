@@ -7,6 +7,9 @@
         <td><b>Review Id</b></td>
         <td><b>Candidate Name</b></td>
         <td><b>Performed at</b></td>
+        {%if show_reviews == "all" %}
+        <td><b>Reviewed by</b></td>
+        {% endif %}
     </tr>
 
     {% for r in review_list %}
@@ -17,10 +20,17 @@
                 {{r.candidate.name}}
             </a>
         </td>
-        <td>perfomed date</td>
+        <td>performed date</td>
+
+        {%if show_reviews == "all" %}
+        <td>{{r.user.username}}</td>
+        {% endif %}
+
     </tr>
     {% endfor %}
 </table>
 
 <a href="{% url 'view_dashboard' %}">Dashboard</a> |
+<a href="{% url 'view_my_reviews' %}">View My Reviews</a> |
+<a href="{% url 'view_all_reviews' %}">View All Reviews</a> |
 <a href="{% url 'logout' %}">Logout</a>

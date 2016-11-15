@@ -18,10 +18,9 @@ from django.core.urlresolvers import reverse
 def perform_review(request):
 
     cid = request.POST.get("candidate_id")
-    #print request.user.id
     print "candidate id " + str(cid)
 
-    # test here if the user, candidate tuple is not already there
+    # test here if the (reviewer, candidate) tuple is not already there
     # and its a new interview
 
     interview = None
@@ -38,10 +37,16 @@ def perform_review(request):
             dict["candidate"] = candidate
             dict["review_status"] = "open"
 
+            # review closed go the dashboard for new review otherwise
+            # continue with the existing review
+
             if interview.status == "closed":
                 dict["review_status"] = "closed"
-
-            return render(request, 'myapp/dashboard.html', dict)
+                return render(request, 'myapp/dashboard.html', dict)
+            else:
+                return HttpResponseRedirect(
+                    reverse('view_start_review', args=(),
+                            kwargs={'review_id': interview.id}))
 
         except Interview.DoesNotExist:
             interview = Interview.objects.create(candidate_id=cid,
@@ -115,7 +120,7 @@ def view_my_reviews(request):
     print review_list
     return render(request, 'myapp/review_list.html', {
         'review_list': review_list,
-        'type': 'completed'
+        'show_reviews': 'personal'
     })
 
 
@@ -134,21 +139,18 @@ def view_candidate_review(request, review_id):
     return render(request, 'myapp/candidate_review.html', {
         'review_responses': review_responses,
         'candidate_name': review.candidate.name,
+        'reviewer_name' : review.user.username,
         'ratings': rating_choice
     })
 
-def view_pending_reviews(request):
-    pass
-    """reviews = Interview.objects.filter(user_id=request.user.id)
-    render(request, 'myapp/review_list.html', {
-        'reviews': reviews,
-        'type': 'pending'
-    })"""
-
-
-
 def view_all_reviews(request):
-    pass
+
+    review_list = Interview.objects.all()
+
+    return render(request, 'myapp/review_list.html', {
+        'review_list': review_list,
+        'show_reviews': 'all'
+    })
 
 @login_required(login_url="/view_login")
 def questions_list(request):
@@ -238,35 +240,45 @@ def save_response(request, qid):
         'Excellent': 5
     }
 
+    dict = {}
     rating = request.POST.get("ratings")
     comments = request.POST.get("comments")
     review_id = request.POST.get("review_id")
 
     question = Question.objects.get(id=qid)
-    question_response = QuestionResponse(question_id = qid,
-                                         answer_ratings=int(rating),
-                                         response_at=timezone.now(),
-                                         response_given_by=request.user.username,
-                                         comments=comments)
-
-    if int(rating) is not rating_choice['Not Answered']:
-        question.num_of_times_answered += 1
-    question.num_of_times_asked += 1
-
-    question_response.interview_id = review_id
-    question_response.save()
-    question.save()
-
     sub_topic_id = question.sub_topic.id
+
+    # if response not existed for this question and interview then add it
+    try:
+        QuestionResponse.objects.get(question_id=qid,
+                                        interview_id=review_id)
+        dict['response_saved'] = False
+
+    except QuestionResponse.DoesNotExist:
+
+        question_response = QuestionResponse(question_id = qid,
+                                             answer_ratings=int(rating),
+                                             response_at=timezone.now(),
+                                             response_given_by=request.user.username,
+                                             comments=comments)
+
+        if int(rating) is not rating_choice['Not Answered']:
+            question.num_of_times_answered += 1
+        question.num_of_times_asked += 1
+
+        question_response.interview_id = review_id
+        question_response.save()
+        question.save()
+        dict['response_saved'] = True
+
     question_list = Question.objects.filter(sub_topic_id=sub_topic_id). \
         order_by('-num_of_times_asked')
 
-    return render(request, 'myapp/questions.html', {
-        'response_saved': True,  # for successful msg response
-        'sub_topic': sub_topic_id,
-        'review_id': review_id,
-        'question_list': question_list
-    })
+    dict['sub_topic'] = sub_topic_id
+    dict['review_id'] = review_id
+    dict['question_list'] = question_list
+
+    return render(request, 'myapp/questions.html', dict)
 
 @login_required(login_url="/view_login")
 def view_question_responses(request, qid):

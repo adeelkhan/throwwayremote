@@ -35,16 +35,14 @@ urlpatterns = [
     url(r'^view_my_reviews/', views.view_my_reviews,
         name="view_my_reviews"),
 
-    url(r'^view_pending_reviews/', views.view_pending_reviews,
-        name="view_pending_reviews"),
     url(r'^view_all_reviews/', views.view_all_reviews,
         name="view_all_reviews"),
 
-    url(r'^candidate_review/', views.freeze_review,
-        name="freeze_review"),
-
-    url(r'^freeze_review/(?P<review_id>[0-9]+)', views.view_candidate_review,
+    url(r'^candidate_review/(?P<review_id>[0-9]+)', views.view_candidate_review,
         name="view_candidate_review"),
+
+    url(r'^freeze_review/', views.freeze_review,
+        name="freeze_review"),
 
     url(r'^view_login/', views.view_login, name='view_login'),
     url(r'^login/', views.user_login, name='login'),
