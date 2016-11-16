@@ -1,31 +1,67 @@
+{% load staticfiles %}
+
+<html>
+    <head>
+        <title>Interview App</title>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap-theme.css' %}">
+        <!-- Custom styles for this template -->
+        <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}">
+    </script>
+    </head>
+<body>
+
+ <div class="page-header">
+      <ul class="nav nav-pills" role="tablist">
+          <li role="presentation" class="active"><a href="{% url 'view_dashboard' %}">Goto Dashboard</a></li>
+        <li role="presentation"><a href="{% url 'view_my_reviews' %}">My Reviews</a></li>
+        <li role="presentation"><a href="{% url 'view_all_reviews' %}">All Reviews</a></li>
+        <li role="presentation"><a href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+ </div>
+
+
 
 {% if user.is_authenticated %}
 <b> Logged in user is {{ user.username }}! </b>
 {% endif %}
 
-<h1>Responses :</h1>
-<br/>
+<div class="page-header">
+    <h1>Response List:</h1>
+</div>
 
-<table style="width:100%">
-    <tr>
-        <td><b>Id</b></td>
-        <td><b>Question</b></td>
-        <td><b>Ratings</b></td>
-        <td><b>Response at</b></td>
-        <td><b>Response by</b></td>
-    </tr>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-striped">
+            <thead>
+                <th>#</th>
+                <th>Question</th>
+                <th>Ratings</th>
+                <th>Response at</th>
+                <th>Response by</th>
+            </thead>
 
-    {% for q in question_response_list %}
-    <tr>
-        <td>{{ q.id }}</td>
-        <td>{{ q.question.question_text }}</td>
-        {% load index %}
-        <td>{{ ratings|index:q.answer_ratings }}</td>
-        <td>{{q.response_at}}</td>
-        <td>{{q.response_given_by}}</td>
-    </tr>
-    {% endfor %}
-</table>
+            {% for q in question_response_list %}
+            <tr>
+                <td>{{ q.id }}</td>
+                <td>{{ q.question.question_text }}</td>
+                {% load index %}
+                <td>{{ ratings|index:q.answer_ratings }}</td>
+                <td>{{q.response_at}}</td>
+                <td>{{q.response_given_by}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
 
-<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">Back to Questions</a> |
-<a href="{% url 'logout' %}">Logout</a>
+
+<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">
+    <button type="button" class="btn btn-xs btn-primary">Back to Questions</button>
+</a>
+
+</body>
+</html>

@@ -218,9 +218,13 @@ def add_question_response(request, qid):
 
     dict = {}
     question = Question.objects.get(id=qid)
+    review_id = request.GET.get("review_id")
+    candidate = Interview.objects.get(id=review_id).candidate
+
+    dict['review_id'] = review_id
     dict["question"] = question
     dict["sub_topic"] = question.sub_topic.id
-    dict['review_id'] = request.GET.get("review_id")
+    dict['candidate'] = candidate
 
     return render(request, 'myapp/question_response.html', dict)
 
