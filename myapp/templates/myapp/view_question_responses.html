@@ -14,6 +14,8 @@
     </head>
 <body>
 
+
+<div class="container">
  <div class="page-header">
       <ul class="nav nav-pills" role="tablist">
           <li role="presentation" class="active"><a href="{% url 'view_dashboard' %}">Goto Dashboard</a></li>
@@ -22,46 +24,70 @@
         <li role="presentation"><a href="{% url 'logout' %}">Logout</a></li>
       </ul>
  </div>
-
-
-
-{% if user.is_authenticated %}
-<b> Logged in user is {{ user.username }}! </b>
-{% endif %}
-
-<div class="page-header">
-    <h1>Response List:</h1>
 </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <table class="table table-striped">
-            <thead>
-                <th>#</th>
-                <th>Question</th>
-                <th>Ratings</th>
-                <th>Response at</th>
-                <th>Response by</th>
-            </thead>
 
-            {% for q in question_response_list %}
-            <tr>
-                <td>{{ q.id }}</td>
-                <td>{{ q.question.question_text }}</td>
-                {% load index %}
-                <td>{{ ratings|index:q.answer_ratings }}</td>
-                <td>{{q.response_at}}</td>
-                <td>{{q.response_given_by}}</td>
-            </tr>
-            {% endfor %}
-        </table>
+<div class="container">
+    <div class="row" >
+        {% if user.is_authenticated %}
+        <b> Logged in user is {{ user.username }}! </b>
+        {% endif %}
     </div>
+    <div class="row">
+        <div class="page-header">
+            <h2>Responses:</h2>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <thead>
+                    <th>#</th>
+                    <th>Question</th>
+                    <th>Ratings</th>
+                    <th>Response at</th>
+                    <th>Response by</th>
+                </thead>
+
+                {% for resp in question_response_list %}
+                <tr>
+                    <td>{{ resp.id }}</td>
+                    <td>{{ resp.question.question_text }}</td>
+
+                    {% load index %}
+                        {% if ratings|index:resp.answer_ratings == 'Not Answered' %}
+                            <td><span class="label label-default">
+                                {{ ratings|index:resp.answer_ratings }}
+                                </span></td>
+                        {% elif ratings|index:resp.answer_ratings == 'Bad' %}
+                            <td><span class="label label-danger">
+                                {{ ratings|index:resp.answer_ratings }}
+                            </span></td>
+                        {% elif ratings|index:resp.answer_ratings == 'Satisfactory' %}
+                            <td><span class="label label-primary">
+                                {{ ratings|index:resp.answer_ratings }}
+                            </span></td>
+                        {% elif ratings|index:resp.answer_ratings == 'Good' %}
+                            <td><span class="label label-success">
+                                {{ ratings|index:resp.answer_ratings }}
+                            </span></td>
+                        {% elif ratings|index:resp.answer_ratings == 'Excellent' %}
+                            <td><span class="label label-warning">
+                                {{ ratings|index:resp.answer_ratings }}
+                            </span></td>
+                        {% endif %}
+
+
+                    <td>{{resp.response_at}}</td>
+                    <td>{{resp.response_given_by}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+
+    <a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">
+        <button type="button" class="btn btn-xs btn-primary">Back to Questions</button>
+    </a>
 </div>
-
-
-<a href="{% url 'view_questions_list'%}?sub_topic={{sub_topic}}&review_id={{review_id}}">
-    <button type="button" class="btn btn-xs btn-primary">Back to Questions</button>
-</a>
-
 </body>
 </html>
